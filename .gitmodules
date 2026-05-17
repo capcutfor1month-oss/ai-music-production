@@ -1,0 +1,6 @@
+[submodule "pluginbridge"]
+	path = pluginbridge
+	url = https://huggingface.co/RAM2118/pluginbridge
+[submodule "hc-bridge"]
+	path = hc-bridge
+	url = https://huggingface.co/spaces/RAM2118/hc-bridge

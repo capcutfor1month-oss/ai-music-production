@@ -4,11 +4,11 @@
 *.key
 *.secret
 
-# PluginBridge — already its own repo on HuggingFace (794MB incl. JUCE)
-pluginbridge/
+# Nested repos — tracked as submodules instead
+# pluginbridge → HuggingFace RAM2118/pluginbridge
+# hc-bridge    → HuggingFace RAM2118/hc-bridge
 
-# Nested repos — each has its own remote
-hc-bridge/
+# mpro-ableton-skills — external project, not ours
 mpro-ableton-skills/
 
 # Rust build artifacts
