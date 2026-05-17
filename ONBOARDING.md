@@ -1,5 +1,12 @@
 # AI Music Production System — What This Is, How It Was Built, How To Use It
 
+**GitHub Repositories:**
+- Main repo (everything): `github.com/capcutfor1month-oss/ai-music-production`
+- PluginBridge (VST3 plugin host + MCP): `github.com/capcutfor1month-oss/pluginbridge`
+- HC-Bridge: `github.com/capcutfor1month-oss/hc-bridge`
+
+> Clone everything: `git clone --recursive https://github.com/capcutfor1month-oss/ai-music-production`
+
 ---
 
 ## THE IDEA
@@ -256,6 +263,36 @@ basic-pitch /output/dir/ /tmp/recording.wav --save-midi --model-serialization on
 
 ---
 
+### Phase 13 — PluginBridge: Full VST3/AU Parameter Control via MCP
+**Problem:** The LOM only exposes 1 parameter for any VST3 plugin (on/off toggle). Pro-Q 4 has 737 parameters. Serum 2, Diva, Omnisphere — all locked. The AI could control Ableton's own devices but was blind to every third-party plugin.
+
+Built **PluginBridge** — a JUCE-based VST3/AU plugin that acts as a host for any other plugin. It:
+1. Loads the target plugin (e.g. Pro-Q 4) **in-process** — its native GUI appears embedded in Ableton's window
+2. Runs a crash-safety scanner first — unsafe plugins (iZotope, some Waves) load in a separate Helper process with audio-only mode
+3. Exposes ALL of the hosted plugin's parameters via a local **MCP server on port 16620**
+4. Provides real-time per-track audio analysis: LUFS, true peak, 7-band EQ balance, stereo width, brightness
+
+**8 sprints of development:**
+
+| Sprint | What was built |
+|---|---|
+| 1 | Plugin shell + MCP server (HTTP JSON-RPC 2.0) |
+| 2 | Out-of-process hosting via shared memory. Helper process. Crash isolation. |
+| 3 | Full in-process hosting + safety scan. Ableton-style TreeView plugin picker. |
+| 4 | AudioAnalyser — LUFS, FFT bands, stereo width, centroid, true peak |
+| 5 | Live spectrum analyzer in editor GUI |
+| 6 | Multi-instance support + channel name dropdown (any track addressable by name) |
+| 7 | MCP param ops routed through in-process plugin — EQ changes visible in GUI instantly |
+| 8 | Port 16620 priority restored — first instance always gets 16620, others auto-port |
+
+**Key discovery:** In Pro-Q 4, each band has a `Band X Used` parameter (separate from `Enabled`). Must set `Used=1.0` to make a band appear. The `search_param` tool reveals all 737 parameters with display values.
+
+**Result:** AI can now control Pro-Q 4 (737 params), Serum 2, Diva, Omnisphere, or any VST3/AU plugin with full GUI feedback. The VST3 limitation documented in Phase 8 is **solved**.
+
+Source: `github.com/capcutfor1month-oss/pluginbridge` | v0.8.0
+
+---
+
 ### Phase 12b — Stem Analysis Playback Workflow
 **Problem:** Gemini CLI kept hitting silent metering (API always returns -200dB) when trying to analyze individual tracks. It diagnosed this as "Back to Arrangement lock" or "monitoring states" — but the real causes were different.
 
@@ -320,7 +357,22 @@ Wrote `STEM_ANALYSIS_PLAYBACK_GUIDE.md` documenting the exact correct sequence: 
 │  AgentAudioTap.amxd on Master track          │ audio→MIDI  │
 │  ↓ captures audio to /tmp/*.wav              │ ONNX, local │
 │  ↓ audio-analyzer-rs → full analysis report  └─────────────┘
-└─────────────────────────────────────────────────────────────┘
+│
+│  PluginBridge.vst3 (load on any track)
+│  ↓ hosts VST3/AU plugin in-process (SAFE) or via Helper (UNSAFE)
+│  ↓ MCP server port 16620 (first instance) / auto-port (others)
+│  ↓ exposes ALL plugin params + real-time per-track LUFS/FFT
+│                                    ┌────────────────────────┐
+│                                    │  PluginBridge MCP      │
+│                                    │  list_instances        │
+│                                    │  list_plugins          │
+│                                    │  search_param          │
+│                                    │  get_params            │
+│                                    │  set_params            │
+│                                    │  get_analysis          │
+│                                    │  Pro-Q 4: 737 params ✓ │
+│                                    │  Serum 2, Diva, etc. ✓ │
+└────────────────────────────────────└────────────────────────┘
 ```
 
 ---
@@ -468,6 +520,40 @@ Both files contain everything the AI needs to work without you re-explaining any
 
 ---
 
+### Step 9 — Install PluginBridge (VST3 plugin control)
+
+```bash
+# Build from source
+cd pluginbridge
+cmake3.28 -B build -DCMAKE_BUILD_TYPE=Release
+cmake3.28 --build build --target PluginBridge_VST3 -- -j4
+# Auto-installs to ~/Library/Audio/Plug-Ins/VST3/PluginBridge.vst3
+```
+
+*(Pre-built binary coming — for now build from source. Requires Xcode + CMake 3.28. See `pluginbridge/CLAUDE.md` for full build notes.)*
+
+**Per-session setup (takes 30 seconds):**
+1. In Ableton, add an **Audio Effect Rack** track (e.g. "Vocal Bus")
+2. Drag `PluginBridge.vst3` onto that track as an audio effect
+3. In the PluginBridge GUI, select the **channel name** from the dropdown (e.g. "Vocal Bus")
+4. Click **Browse** to open the plugin picker → select e.g. Pro-Q 4
+5. Pro-Q 4's full GUI appears inside Ableton — MCP tools are live instantly on port 16620
+
+**Test it:**
+```
+list_instances()                                    → ["Vocal Bus"]
+search_param("Vocal Bus","Pro-Q 4","band 1 freq")  → [{i:12, name:"Band 1 Freq", value:0.5}]
+set_params("Vocal Bus","Pro-Q 4",{12: 0.6})        → "ok"  (band moves in Pro-Q 4 GUI)
+get_analysis("Vocal Bus")                           → "[Vocal Bus] -16.2 LUFS | TP:-1.1 | balanced"
+```
+
+**Safe plugins** (full GUI in Ableton): Pro-Q 4, The God Particle, Little MicroShift, LIMITER
+**Unsafe plugins** (audio-only, MCP still works): iZotope Ozone 12, Neutron 5
+
+**Important:** To make a Pro-Q 4 band visible, you must set `Band X Used = 1.0` (separate from `Enabled`). Use `search_param` to find all 737 parameter names first.
+
+---
+
 ## DAILY WORKFLOW
 
 ### Starting a session
@@ -533,9 +619,10 @@ If resuming a saved session:
 
 - Generate audio files (not Suno, not a plugin)
 - Write entire songs (you own the melody and emotion)
-- Control VST3 plugin internals (Pro-Q 4, Serum 2 knobs — LOM limitation)
 - Create Group Tracks via code (Ableton has no API for this — use Cmd+G)
 - Touch the master bus without your explicit instruction
+
+> **Note:** "Can't control VST3 plugins" was a LOM limitation. **PluginBridge (Phase 13) solves this.** Load `PluginBridge.vst3` on a track, pick Pro-Q 4 / Serum 2 / any plugin from the picker, and the AI has full parameter access (737 params for Pro-Q 4).
 
 ---
 
@@ -591,6 +678,26 @@ If resuming a saved session:
 ├── audio-analyzer-rs/
 │   ├── cli                      ← Run directly for analysis
 │   └── mcp-server               ← Auto-loaded by Claude Code via .mcp.json
+│
+├── pluginbridge/                ← Phase 13: VST3/AU param control via MCP
+│   ├── CLAUDE.md                ← PluginBridge context (read by ML intern + Claude Code)
+│   ├── SYNC.md                  ← Sprint state + ML intern ↔ Claude Code handoff
+│   ├── SPRINT-LOG.md            ← History of all 8 sprints
+│   ├── FAILED-APPROACHES.md     ← What didn't work and why
+│   ├── MACHINE-CONTEXT.md       ← Verified JUCE APIs, system paths
+│   ├── ROADMAP.md               ← Upcoming sprints
+│   ├── Source/Plugin/           ← VST3 (runs inside Ableton)
+│   │   ├── PluginBridgeProcessor.{h,cpp}
+│   │   ├── PluginBridgeEditor.{h,mm}
+│   │   ├── PluginPickerComponent.{h,mm}
+│   │   ├── McpServer.{h,cpp}    ← HTTP JSON-RPC 2.0, port 16620
+│   │   └── HelperConnection.{h,cpp}
+│   ├── Source/Helper/           ← Standalone: --load (audio) and --scan (safety test)
+│   └── build/                   ← CMake build dir (gitignored artifacts)
+│       (GitHub: github.com/capcutfor1month-oss/pluginbridge)
+│
+├── hc-bridge/                   ← HC audio bridge tool
+│       (GitHub: github.com/capcutfor1month-oss/hc-bridge)
 │
 └── NotebookLM Sources/
     ├── josefigueredo/           ← 14 SOURCE_OF_TRUTH files
