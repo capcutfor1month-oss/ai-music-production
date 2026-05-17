@@ -3,8 +3,6 @@
 **GitHub Repositories:**
 - Main repo (everything): `github.com/capcutfor1month-oss/ai-music-production`
 - PluginBridge (VST3 plugin host + MCP): `github.com/capcutfor1month-oss/pluginbridge`
-- HC-Bridge: `github.com/capcutfor1month-oss/hc-bridge`
-
 > Clone everything: `git clone --recursive https://github.com/capcutfor1month-oss/ai-music-production`
 
 ---
@@ -695,9 +693,6 @@ If resuming a saved session:
 │   ├── Source/Helper/           ← Standalone: --load (audio) and --scan (safety test)
 │   └── build/                   ← CMake build dir (gitignored artifacts)
 │       (GitHub: github.com/capcutfor1month-oss/pluginbridge)
-│
-├── hc-bridge/                   ← HC audio bridge tool
-│       (GitHub: github.com/capcutfor1month-oss/hc-bridge)
 │
 └── NotebookLM Sources/
     ├── josefigueredo/           ← 14 SOURCE_OF_TRUTH files

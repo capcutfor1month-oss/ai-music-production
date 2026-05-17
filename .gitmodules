@@ -1,6 +1,3 @@
 [submodule "pluginbridge"]
 	path = pluginbridge
 	url = https://github.com/capcutfor1month-oss/pluginbridge
-[submodule "hc-bridge"]
-	path = hc-bridge
-	url = https://github.com/capcutfor1month-oss/hc-bridge
