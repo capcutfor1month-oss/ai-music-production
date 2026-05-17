@@ -1,0 +1,8 @@
+[mcp_servers.agent-mem0]
+command = "/Volumes/T7 Shield/Users/Aditya/Downloads/AI MUSIC PRODUCTION/start_mem0_mcp.sh"
+
+[mcp_servers.agent-memory]
+command = "/Volumes/T7 Shield/Users/Aditya/Downloads/AI MUSIC PRODUCTION/start_mem0_mcp.sh"
+
+[mcp_servers.audio-analyzer]
+command = "/Volumes/T7 Shield/Users/Aditya/Downloads/AI MUSIC PRODUCTION/audio-analyzer-rs/mcp-server"

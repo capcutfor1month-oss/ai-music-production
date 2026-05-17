@@ -1,0 +1,18 @@
+{
+  "mcpServers": {
+    "audio-analyzer": {
+      "command": "/Volumes/T7 Shield/Users/Aditya/Downloads/AI MUSIC PRODUCTION/audio-analyzer-rs/mcp-server",
+      "args": [],
+      "description": "Rust-based audio analysis: spectral features, key detection, BPM, LUFS, stereo width, dynamics, section boundaries. Faster than Python FFT."
+    },
+    "agent-mem0": {
+      "command": "/Volumes/T7 Shield/Users/Aditya/Downloads/AI MUSIC PRODUCTION/start_mem0_mcp.sh",
+      "args": [],
+      "description": "Persistent cross-session memory. Stores production decisions, EQ choices, what worked and what didn't. LLM: gemini-2.0-flash. Embedder: gemini-embedding-001. Key loaded from .env"
+    },
+    "agent-memory": {
+      "command": "/Volumes/T7 Shield/Users/Aditya/Downloads/AI MUSIC PRODUCTION/start_mem0_mcp.sh",
+      "args": []
+    }
+  }
+}

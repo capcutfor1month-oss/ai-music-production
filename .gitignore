@@ -1,0 +1,63 @@
+# API keys and secrets
+.env
+*.env
+*.key
+*.secret
+
+# PluginBridge — already its own repo on HuggingFace (794MB incl. JUCE)
+pluginbridge/
+
+# Nested repos — each has its own remote
+hc-bridge/
+mpro-ableton-skills/
+
+# Rust build artifacts
+audio-analyzer-rs/target/
+audio-analyzer-rs/cli
+audio-analyzer-rs/mcp-server
+
+# Audio files (reference tracks, recordings)
+*.wav
+*.mp3
+*.aif
+*.aiff
+*.flac
+*.ogg
+media/reference-audio/
+
+# Node
+node_modules/
+package-lock.json
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+venv/
+.venv/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Logs
+*.log
+tools/token_log.jsonl
+
+# Build outputs
+build/
+dist/
+*.o
+*.a
+*.so
+*.dylib
+
+# ZIP archives (skill bundles — source files are tracked instead)
+*.zip
+
+# Large binary assets
+machine-assets/

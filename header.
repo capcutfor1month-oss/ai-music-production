@@ -1,0 +1,12 @@
+Environment:
+
+Ableton: Primary AI control surface via TCP port 16619.
+Logic Pro: Final arrangement and mix.
+ACE-Step: API integration for generating MIDI patterns and stem processing.
+
+
+Core Objective: Bridging the gap between AI generation (ACE-Step) and DAW implementation (Ableton/Logic) using the HC Bridge protocol.
+System Check & InventoryI have acknowledged the following tools in your environment:
+tools/acestep_sketch.py: For melody/drum MIDI generation.
+tools/acestep_stems.py:
+Message from Max

@@ -1,0 +1,2 @@
+- [Arrangement View Composition](feedback_arrangement-view.md) — User wants all MIDI composition placed in Arrangement View; explain drag step upfront every time
+- [Produce While Mix](feedback_produce-while-mix.md) — Proactively check frequency clashes and mix implications during composition; never wait for user to ask
