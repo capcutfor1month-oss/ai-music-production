@@ -67,6 +67,11 @@ dist/
 # Large binary assets
 machine-assets/
 
+# PDFs and documents (reference materials, not for repo)
+*.pdf
+*.PDF
+NotebookLM Sources/
+
 # Ableton project binaries
 *.als
 *.alp
