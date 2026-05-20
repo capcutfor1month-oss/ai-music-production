@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "conductor-phase2",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["serve", "-l", "4600", "."],
+      "port": 4600
+    }
+  ]
+}

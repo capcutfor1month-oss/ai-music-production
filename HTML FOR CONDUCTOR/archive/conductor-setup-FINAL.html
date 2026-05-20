@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Conductor — Setup</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#080809;--panel:#0e0e10;--card:#141416;--card2:#111113;
+  --border:rgba(255,255,255,0.07);--text:#f5f5f7;--muted:rgba(255,255,255,0.44);
+  --dim:rgba(255,255,255,0.22);--blue:#4d8eff;--blue2:#6fa3ff;
+  --green:#1fcc6e;--orange:#ff8c3a;--ease:cubic-bezier(0.16,1,0.3,1);
+  --spring:cubic-bezier(0.34,1.56,0.64,1);
+}
+html,body{width:100%;height:100%;background:radial-gradient(ellipse at 50% 0%,#0d1220,#060608 60%);
+  display:flex;align-items:center;justify-content:center;
+  font-family:Inter,sans-serif;overflow:hidden;-webkit-font-smoothing:antialiased;}
+.shell{width:1000px;height:640px;background:var(--bg);border-radius:22px;
+  border:1px solid rgba(255,255,255,0.08);overflow:hidden;display:flex;
+  position:relative;box-shadow:0 0 0 1px rgba(0,0,0,.6),0 32px 80px rgba(0,0,0,.7);}
+.screen{display:none;width:100%;height:100%;flex-direction:row;
+  animation:fadeIn 320ms var(--ease) both;}
+.screen.active{display:flex;}
+.screen.full{flex-direction:column;align-items:center;justify-content:center;}
+@keyframes fadeIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:none}}
+.left{width:400px;min-width:400px;height:100%;padding:44px 44px;
+  display:flex;flex-direction:column;justify-content:center;
+  border-right:1px solid rgba(255,255,255,0.055);position:relative;overflow:hidden;}
+.lglow{position:absolute;top:-80px;left:-60px;width:280px;height:280px;border-radius:50%;
+  background:radial-gradient(circle,rgba(77,142,255,.10),transparent 70%);pointer-events:none;}
+.right{flex:1;height:100%;background:var(--panel);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  position:relative;overflow:hidden;}
+.rgrid{position:absolute;inset:0;
+  background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);
+  background-size:32px 32px;}
+.rvig{position:absolute;inset:0;
+  background:radial-gradient(ellipse at center,transparent 40%,rgba(8,8,9,.55) 100%);}
+.rc{position:relative;z-index:2;display:flex;flex-direction:column;
+  align-items:center;width:100%;padding:32px;gap:14px;}
+.eyebrow{font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--blue);margin-bottom:14px;display:flex;align-items:center;gap:7px;}
+.eline{flex:1;height:1px;background:rgba(77,142,255,.25);max-width:40px;}
+h1{font-size:46px;font-weight:800;line-height:1.06;letter-spacing:-.045em;
+  color:var(--text);margin-bottom:14px;}
+h2{font-size:31px;font-weight:700;line-height:1.1;letter-spacing:-.035em;
+  color:var(--text);margin-bottom:10px;}
+.sub{font-size:14.5px;color:var(--muted);line-height:1.65;margin-bottom:28px;}
+.fp{font-size:11.5px;color:var(--dim);line-height:1.65;margin-top:16px;text-align:center;}
+.btn{width:100%;height:50px;border-radius:12px;border:none;cursor:pointer;
+  font-family:Inter,sans-serif;font-size:14.5px;font-weight:600;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  position:relative;overflow:hidden;transition:transform 200ms var(--ease),
+  box-shadow 200ms var(--ease);letter-spacing:-.01em;}
+.btn-p{background:linear-gradient(160deg,#3d7aff,#5a95ff 50%,#4080ff);color:#fff;
+  box-shadow:0 4px 20px rgba(77,142,255,.3),inset 0 1px 0 rgba(255,255,255,.15);}
+.btn-p::before{content:'';position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(255,255,255,.12),transparent);border-radius:12px;}
+.btn-p:hover{transform:translateY(-1px);box-shadow:0 8px 32px rgba(77,142,255,.42),
+  inset 0 1px 0 rgba(255,255,255,.15);}
+.btn-p:active{transform:none;}
+.btn-d{background:rgba(255,255,255,.05);color:var(--dim);
+  border:1px solid rgba(255,255,255,.06);cursor:not-allowed;}
+.arr{font-size:16px;transition:transform 200ms var(--ease);}
+.btn-p:hover .arr{transform:translateX(3px);}
+.lnk{background:none;border:none;color:rgba(77,142,255,.75);font-size:12.5px;
+  cursor:pointer;font-family:Inter,sans-serif;padding:0;transition:color 150ms;}
+.lnk:hover{color:var(--blue2);}
+.skip-lnk{background:none;border:none;color:var(--dim);font-size:12px;
+  cursor:pointer;font-family:Inter,sans-serif;padding:0;
+  margin-top:10px;text-align:center;width:100%;transition:color 150ms;}
+.skip-lnk:hover{color:var(--muted);}
+/* API cards */
+.acard{background:var(--card2);border:1px solid rgba(255,255,255,.07);
+  border-radius:14px;padding:18px 20px;margin-bottom:11px;
+  transition:border-color 300ms,box-shadow 300ms;}
+.acard.ok{border-color:rgba(31,204,110,.3);box-shadow:0 0 20px rgba(31,204,110,.05) inset;}
+.albl{font-size:11px;font-weight:600;color:var(--muted);letter-spacing:.05em;
+  text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:7px;}
+.kbox{width:18px;height:18px;border-radius:5px;background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.10);display:inline-flex;align-items:center;
+  justify-content:center;font-size:10px;}
+.arow{display:flex;gap:8px;}
+.ainp{flex:1;height:42px;background:rgba(0,0,0,.3);
+  border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:0 13px;
+  color:var(--text);font-family:"JetBrains Mono",monospace;font-size:12.5px;
+  outline:none;transition:border-color 200ms,box-shadow 200ms;letter-spacing:.04em;}
+.ainp:focus{border-color:rgba(77,142,255,.4);box-shadow:0 0 0 3px rgba(77,142,255,.08);}
+.ainp::placeholder{color:rgba(255,255,255,.18);}
+.vbtn{height:42px;padding:0 16px;border-radius:10px;
+  border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.05);
+  color:rgba(255,255,255,.7);font-size:12.5px;font-weight:500;
+  cursor:pointer;font-family:Inter,sans-serif;transition:all 150ms;white-space:nowrap;}
+.vbtn:hover{background:rgba(255,255,255,.09);color:var(--text);}
+.ahelp{font-size:11.5px;color:var(--dim);margin-top:8px;}
+.sbadge{display:inline-flex;align-items:center;gap:5px;margin-top:9px;
+  padding:4px 10px;border-radius:999px;font-size:11px;font-weight:500;
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);color:var(--dim);}
+.sbadge.ok{color:var(--green);background:rgba(31,204,110,.07);border-color:rgba(31,204,110,.22);}
+.sdot{width:6px;height:6px;border-radius:50%;background:currentColor;}
+/* Accordion */
+.acc-wrap{margin-top:12px;}
+.acc-btn{display:flex;align-items:center;gap:6px;background:none;border:none;
+  font-family:Inter,sans-serif;font-size:12.5px;color:rgba(77,142,255,.75);
+  cursor:pointer;padding:0;transition:color 150ms;}
+.acc-btn:hover{color:var(--blue2);}
+.acc-ch{font-size:10px;transition:transform 250ms var(--ease);}
+.acc-body{display:none;padding:12px 4px 0;font-size:12.5px;color:var(--muted);line-height:1.7;}
+.acc-body.open{display:block;}
+.mono{font-family:"JetBrains Mono",monospace;color:var(--green);font-size:11.5px;}
+/* Step cards */
+.scard{background:var(--card2);border:1px solid rgba(255,255,255,.06);
+  border-radius:14px;padding:16px 18px;margin-bottom:9px;
+  display:flex;align-items:flex-start;gap:13px;
+  transition:border-color 350ms,background 350ms,box-shadow 350ms;}
+.scard.done{border-color:rgba(31,204,110,.3);background:rgba(31,204,110,.04);}
+.scard.pending{border-color:rgba(77,142,255,.3);background:rgba(77,142,255,.04);}
+.snum{width:26px;height:26px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;
+  border:1.5px solid rgba(255,255,255,.10);color:var(--muted);
+  background:rgba(255,255,255,.04);transition:all 350ms var(--ease);margin-top:1px;}
+.scard.done .snum{background:var(--green);border-color:var(--green);color:#000;font-size:13px;}
+.scard.pending .snum{border-color:var(--blue);color:var(--blue);background:rgba(77,142,255,.10);}
+.stitle{font-size:13.5px;font-weight:600;color:var(--text);margin-bottom:3px;}
+.sdesc{font-size:12px;color:var(--muted);line-height:1.5;}
+/* Status banner */
+.banner{display:flex;align-items:center;gap:10px;padding:11px 15px;border-radius:11px;
+  background:rgba(255,140,58,.07);border:1px solid rgba(255,140,58,.2);
+  font-size:13px;color:var(--orange);margin-bottom:14px;transition:all 400ms;}
+.banner.ok{background:rgba(31,204,110,.07);border-color:rgba(31,204,110,.22);color:var(--green);}
+.pdot{width:7px;height:7px;border-radius:50%;background:currentColor;flex-shrink:0;
+  animation:pulse 1.4s infinite;}
+.banner.ok .pdot{animation:none;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.6)}}
+/* Perm cards */
+.pcard{background:var(--card2);border:1px solid rgba(255,255,255,.07);
+  border-radius:14px;padding:16px 18px;margin-bottom:9px;
+  display:flex;align-items:center;gap:14px;
+  transition:border-color 250ms,background 250ms;cursor:pointer;}
+.pcard:hover{background:rgba(255,255,255,.025);}
+.pcard.on{border-color:rgba(31,204,110,.28);background:rgba(31,204,110,.035);}
+.pewrap{width:40px;height:40px;border-radius:12px;flex-shrink:0;
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);
+  display:flex;align-items:center;justify-content:center;font-size:18px;}
+.ptitle{font-size:13.5px;font-weight:600;color:var(--text);margin-bottom:3px;}
+.pdesc{font-size:12px;color:var(--muted);line-height:1.5;}
+.toggle{width:44px;height:26px;border-radius:13px;background:#222;
+  border:1px solid rgba(255,255,255,.08);position:relative;cursor:pointer;
+  flex-shrink:0;transition:background 250ms var(--ease),border-color 250ms;}
+.toggle.on{background:var(--green);border-color:transparent;}
+.tthumb{position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;
+  background:#555;box-shadow:0 1px 4px rgba(0,0,0,.4);
+  transition:transform 250ms var(--spring),background 250ms;}
+.toggle.on .tthumb{transform:translateX(18px);background:#fff;}
+/* Genre */
+.ggrid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:18px;}
+.gpill{padding:11px 10px;border-radius:11px;border:1px solid rgba(255,255,255,.07);
+  background:var(--card2);color:var(--muted);font-size:12.5px;font-weight:500;
+  cursor:pointer;text-align:center;transition:all 200ms var(--ease);}
+.gpill:hover{background:rgba(255,255,255,.04);color:rgba(255,255,255,.7);}
+.gpill.sel{border-color:rgba(255,255,255,.5);color:var(--text);
+  background:rgba(255,255,255,.07);box-shadow:inset 0 0 0 1px rgba(255,255,255,.10);}
+.flbl{font-size:11px;font-weight:600;text-transform:uppercase;
+  letter-spacing:.08em;color:var(--muted);margin-bottom:8px;}
+.tinp{width:100%;height:42px;background:rgba(0,0,0,.3);
+  border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:0 13px;
+  color:var(--text);font-size:13.5px;font-family:Inter,sans-serif;outline:none;
+  transition:border-color 200ms;}
+.tinp:focus{border-color:rgba(255,255,255,.22);}
+.tinp::placeholder{color:rgba(255,255,255,.20);}
+.fhelp{font-size:11.5px;color:var(--dim);margin-top:6px;margin-bottom:16px;}
+.lrow{display:flex;gap:7px;margin-bottom:22px;}
+.lpill{padding:8px 13px;border-radius:9px;border:1px solid rgba(255,255,255,.07);
+  background:var(--card2);color:var(--muted);font-size:12px;cursor:pointer;
+  transition:all 180ms;}
+.lpill.sel{border-color:rgba(77,142,255,.4);color:var(--blue2);background:rgba(77,142,255,.08);}
+/* NB */
+.nbcard{background:var(--card2);border:1px solid rgba(255,255,255,.07);
+  border-radius:14px;padding:18px 20px;margin-bottom:12px;
+  transition:border-color 300ms,box-shadow 300ms;}
+.nbcard.ok{border-color:rgba(31,204,110,.28);box-shadow:inset 0 0 20px rgba(31,204,110,.05);}
+.nbhdr{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+.nbibox{width:36px;height:36px;border-radius:10px;background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.09);display:flex;align-items:center;
+  justify-content:center;font-size:17px;}
+.nblbl{font-size:13px;font-weight:600;color:var(--text);}
+.tier-exp{width:100%;display:flex;align-items:center;justify-content:space-between;
+  padding:12px 0;border:none;background:none;cursor:pointer;
+  border-top:1px solid rgba(255,255,255,.06);margin-top:8px;font-family:Inter,sans-serif;}
+.te-lbl{font-size:12.5px;color:var(--muted);}
+.te-arr{font-size:12px;color:var(--dim);transition:transform 250ms var(--ease);}
+.te-arr.open{transform:rotate(180deg);}
+.tlist{display:none;padding-top:4px;}
+.tlist.open{display:block;}
+.titem{display:flex;align-items:center;gap:10px;padding:8px 4px;
+  border-bottom:1px solid rgba(255,255,255,.04);font-size:12.5px;color:var(--muted);}
+.tnum{width:20px;height:20px;border-radius:50%;flex-shrink:0;
+  border:1px solid rgba(255,255,255,.10);display:flex;align-items:center;
+  justify-content:center;font-size:10px;color:var(--dim);font-weight:600;}
+/* Keys */
+.kd{display:flex;align-items:center;gap:10px;margin:24px 0 32px;}
+.plus{font-size:18px;color:var(--dim);font-weight:300;}
+.keycap{padding:10px 16px;border-radius:10px;background:var(--card2);
+  border:1px solid rgba(255,255,255,.10);border-bottom:3px solid rgba(0,0,0,.5);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.08);color:var(--text);
+  font-size:13.5px;font-weight:600;transition:all 150ms var(--ease);
+  display:flex;flex-direction:column;align-items:center;gap:2px;}
+.ksub{font-size:9px;color:var(--muted);font-weight:400;letter-spacing:.04em;}
+.keycap.pressed{transform:translateY(2px);border-bottom-width:1px;
+  background:rgba(77,142,255,.10);border-color:rgba(77,142,255,.3);}
+/* Demo */
+.demo-stage{position:relative;width:360px;}
+.abel-bg{width:100%;height:200px;border-radius:14px;background:rgba(8,14,8,.95);
+  border:1px solid rgba(255,255,255,.07);overflow:hidden;padding:10px;}
+.dov{position:absolute;top:12px;left:50%;
+  transform:translateX(-50%) translateY(-14px);opacity:0;width:332px;
+  background:rgba(10,10,13,.95);border:1px solid rgba(255,255,255,.12);
+  border-radius:16px;overflow:hidden;
+  box-shadow:0 16px 48px rgba(0,0,0,.7),inset 0 1px 0 rgba(255,255,255,.08);
+  backdrop-filter:blur(24px);
+  transition:all 500ms cubic-bezier(0.34,1.56,0.64,1);}
+.dov.shown{opacity:1;transform:translateX(-50%) translateY(0);}
+/* Overlay mockup */
+.omock{width:358px;background:rgba(12,12,15,.88);
+  border:1px solid rgba(255,255,255,.10);border-radius:18px;overflow:hidden;
+  box-shadow:0 24px 72px rgba(0,0,0,.65),inset 0 1px 0 rgba(255,255,255,.08);
+  animation:float 4s ease-in-out infinite;backdrop-filter:blur(20px);}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.otop{padding:13px 16px;border-bottom:1px solid rgba(255,255,255,.07);
+  display:flex;align-items:center;gap:10px;}
+.oicon{width:26px;height:26px;border-radius:8px;
+  background:linear-gradient(135deg,rgba(255,255,255,.12),rgba(255,255,255,.05));
+  border:1px solid rgba(255,255,255,.10);display:flex;align-items:center;
+  justify-content:center;font-size:13px;flex-shrink:0;}
+.opholder{flex:1;font-size:13px;color:rgba(255,255,255,.30);}
+.osend{width:28px;height:28px;border-radius:9px;background:rgba(77,142,255,.15);
+  border:1px solid rgba(77,142,255,.25);display:flex;align-items:center;
+  justify-content:center;color:var(--blue2);font-size:12px;flex-shrink:0;}
+.obot{padding:11px 16px;display:flex;align-items:center;}
+.otool{display:flex;align-items:center;gap:5px;padding:5px 10px;border-radius:8px;
+  font-size:11.5px;color:rgba(255,255,255,.45);}
+.odiv{flex:1;height:1px;background:rgba(255,255,255,.07);margin:0 8px;}
+.oses{font-size:11.5px;color:rgba(255,255,255,.35);}
+/* Ableton tracks */
+.atracks{width:358px;margin-top:14px;border-radius:12px;overflow:hidden;
+  border:1px solid rgba(255,255,255,.05);background:rgba(8,14,8,.9);opacity:.55;}
+.trow{display:flex;align-items:center;gap:8px;padding:7px 12px;
+  border-bottom:1px solid rgba(255,255,255,.04);}
+.trow:last-child{border-bottom:none;}
+.tled{width:6px;height:6px;border-radius:50%;background:rgba(50,180,80,.6);flex-shrink:0;}
+.tname{font-size:11px;color:rgba(255,255,255,.28);font-family:"JetBrains Mono",monospace;flex:1;}
+.tbar{height:4px;width:60px;border-radius:2px;background:rgba(50,180,80,.2);}
+.tfill{height:100%;border-radius:2px;background:rgba(50,180,80,.5);}
+/* Flow */
+.flow{display:flex;flex-direction:column;align-items:center;width:280px;}
+.fnode{width:100%;padding:12px 18px;border-radius:12px;
+  border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);text-align:center;}
+.fnode.a1{border-color:rgba(77,142,255,.3);background:rgba(77,142,255,.07);}
+.fnode.a2{border-color:rgba(31,204,110,.3);background:rgba(31,204,110,.05);}
+.fnlbl{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:4px;}
+.fnval{font-size:13.5px;font-weight:600;color:var(--text);}
+.fcon{display:flex;flex-direction:column;align-items:center;padding:6px 0;gap:2px;}
+.fline{width:1px;height:14px;background:rgba(255,255,255,.12);}
+.ftag{font-size:10.5px;color:rgba(255,255,255,.30);background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.06);border-radius:6px;padding:2px 8px;
+  font-family:"JetBrains Mono",monospace;}
+/* Code block */
+.cblock{width:280px;border-radius:12px;overflow:hidden;
+  border:1px solid rgba(255,255,255,.07);margin-top:16px;}
+.chead{display:flex;align-items:center;gap:7px;padding:9px 14px;
+  background:rgba(255,255,255,.04);border-bottom:1px solid rgba(255,255,255,.06);}
+.cdot{width:10px;height:10px;border-radius:50%;}
+.cfn{font-size:11px;color:var(--muted);font-family:"JetBrains Mono",monospace;margin-left:4px;}
+.cbody{padding:14px;background:rgba(0,0,0,.4);font-family:"JetBrains Mono",monospace;
+  font-size:11.5px;line-height:1.85;}
+.cc{color:rgba(255,255,255,.22);}
+.ck{color:#4d8eff;}
+.cv{color:#1fcc6e;}
+/* Prefs */
+.pwin{width:330px;border-radius:14px;overflow:hidden;
+  border:1px solid rgba(255,255,255,.10);box-shadow:0 20px 60px rgba(0,0,0,.6);}
+.ptbar{background:rgba(255,255,255,.04);padding:12px 16px;display:flex;
+  align-items:center;gap:7px;border-bottom:1px solid rgba(255,255,255,.07);}
+.ptdot{width:11px;height:11px;border-radius:50%;}
+.pttitle{font-size:12.5px;color:var(--muted);margin:0 auto;font-weight:500;}
+.pbody{background:rgba(15,15,17,.95);padding:14px 14px 16px;}
+.psec{font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--dim);
+  margin-bottom:8px;padding:0 4px;}
+.prow{display:flex;align-items:center;justify-content:space-between;
+  padding:10px 12px;border-radius:9px;margin-bottom:5px;font-size:12.5px;
+  background:rgba(255,255,255,.03);border:1px solid transparent;transition:all 250ms;}
+.prow.hi{border-color:rgba(77,142,255,.35);background:rgba(77,142,255,.08);}
+.pkey{color:rgba(255,255,255,.60);}
+.pval{color:var(--blue2);font-weight:600;font-size:12px;}
+.pvald{color:var(--dim);}
+.parr{margin-top:12px;display:flex;align-items:center;gap:6px;
+  font-size:11.5px;color:var(--orange);}
+.lstat{margin-top:14px;padding:10px 16px;border-radius:10px;
+  border:1px solid rgba(31,204,110,.18);background:rgba(31,204,110,.05);
+  font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--green);line-height:1.8;}
+/* macOS dialog */
+.mdlg{width:310px;border-radius:18px;overflow:hidden;background:#2c2c2e;
+  border:1px solid rgba(255,255,255,.14);box-shadow:0 24px 64px rgba(0,0,0,.7);}
+.dlgbody{padding:26px 28px 20px;text-align:center;}
+.dlglock{width:48px;height:48px;border-radius:14px;
+  background:linear-gradient(135deg,#3a3a3c,#2c2c2e);
+  border:1px solid rgba(255,255,255,.12);display:flex;align-items:center;
+  justify-content:center;font-size:22px;margin:0 auto 14px;
+  box-shadow:0 4px 12px rgba(0,0,0,.4);}
+.dlgtitle{font-size:14.5px;font-weight:600;color:#f5f5f7;margin-bottom:8px;line-height:1.4;}
+.dlgsub{font-size:12.5px;color:rgba(255,255,255,.50);line-height:1.55;}
+.dlgdiv{height:1px;background:rgba(255,255,255,.08);}
+.dlgbtns{display:flex;}
+.dlgbtn{flex:1;padding:14px;text-align:center;font-size:13.5px;background:none;
+  border:none;cursor:pointer;font-weight:500;font-family:Inter,sans-serif;
+  color:#0a84ff;transition:background 150ms;}
+.dlgbtn:hover{background:rgba(255,255,255,.04);}
+.dlgbtn:first-child{border-right:1px solid rgba(255,255,255,.08);}
+.dlgbtn.red{color:#ff453a;}
+.privnote{padding:10px 14px;border-radius:10px;background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.07);font-size:11.5px;color:var(--muted);
+  line-height:1.6;text-align:center;}
+/* Wave */
+.wwrap{width:320px;border-radius:13px;overflow:hidden;
+  border:1px solid rgba(255,255,255,.07);background:rgba(0,0,0,.4);padding:4px 0;}
+.wheader{display:flex;align-items:center;justify-content:space-between;
+  padding:8px 14px 4px;}
+.wtag{padding:3px 9px;border-radius:6px;background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.07);font-size:10.5px;color:var(--muted);}
+/* KP */
+.kpwrap{width:300px;}
+.kptier{padding:13px 18px;margin-bottom:3px;border-radius:11px;
+  border:1px solid rgba(255,255,255,.07);background:var(--card2);
+  display:flex;align-items:center;gap:12px;}
+.kptier.t3{border-color:rgba(77,142,255,.25);background:rgba(77,142,255,.07);}
+.kptier.t1{border-color:rgba(31,204,110,.25);background:rgba(31,204,110,.06);}
+.kpicon{width:36px;height:36px;border-radius:10px;flex-shrink:0;
+  background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.09);
+  display:flex;align-items:center;justify-content:center;font-size:16px;}
+.kpnum{font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:3px;}
+.kptitle{font-size:13px;font-weight:600;color:var(--text);}
+.kpsub{font-size:11px;color:var(--muted);margin-top:1px;}
+/* Success */
+.slogo{width:72px;height:72px;border-radius:22px;margin-bottom:24px;
+  background:linear-gradient(135deg,rgba(255,255,255,.10),rgba(255,255,255,.04));
+  border:1px solid rgba(255,255,255,.10);
+  box-shadow:0 0 40px rgba(77,142,255,.15),inset 0 1px 0 rgba(255,255,255,.10);
+  display:flex;align-items:center;justify-content:center;font-size:32px;}
+.scrow{display:flex;gap:10px;margin:24px 0 32px;flex-wrap:wrap;justify-content:center;}
+.scard{padding:11px 18px;border-radius:12px;border:1px solid rgba(31,204,110,.22);
+  background:rgba(31,204,110,.06);font-size:13px;font-weight:600;color:var(--green);
+  display:flex;align-items:center;gap:7px;}
+.schk{width:18px;height:18px;border-radius:50%;background:rgba(31,204,110,.2);
+  display:flex;align-items:center;justify-content:center;font-size:10px;}
+/* Progress */
+.prog{position:absolute;bottom:20px;left:50%;transform:translateX(-50%);
+  display:flex;align-items:center;gap:6px;}
+.pd{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.12);
+  transition:all 300ms var(--ease);}
+.pd.done{background:rgba(255,255,255,.30);}
+.pd.active{background:var(--blue);width:18px;border-radius:3px;
+  box-shadow:0 0 8px rgba(77,142,255,.5);}
+@keyframes popIn{from{opacity:0;transform:scale(.94) translateY(8px)}to{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+<div class="shell" id="shell">
+
+<!-- S1 WELCOME -->
+<div class="screen active" id="s1">
+  <div class="left">
+    <div class="lglow"></div>
+    <div class="eyebrow"><div class="eline"></div>Conductor<div class="eline"></div></div>
+    <h1>Your AI music<br>production<br>intern</h1>
+    <p class="sub">Watches your Ableton session.<br>Knows your sound. Executes changes.</p>
+    <button class="btn btn-p" onclick="go(2)">Continue <span class="arr">→</span></button>
+    <p class="fp">Bring your own Claude API key.<br>Your knowledge, your sessions. Always local.</p>
+  </div>
+  <div class="right">
+    <div class="rgrid"></div><div class="rvig"></div>
+    <div class="rc">
+      <div class="omock">
+        <div class="otop">
+          <div class="oicon"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="6.5" cy="6.5" r="2.2" fill="rgba(77,142,255,0.95)"/><circle cx="6.5" cy="6.5" r="5" stroke="rgba(77,142,255,0.40)" stroke-width="1"/><circle cx="6.5" cy="2" r=".9" fill="rgba(77,142,255,0.65)"/><circle cx="6.5" cy="11" r=".9" fill="rgba(77,142,255,0.65)"/><circle cx="2" cy="6.5" r=".9" fill="rgba(77,142,255,0.65)"/><circle cx="11" cy="6.5" r=".9" fill="rgba(77,142,255,0.65)"/></svg></div>
+          <span class="opholder">Ask anything about your session…</span>
+          <div class="osend">↵</div>
+        </div>
+        <div class="obot">
+          <div class="otool">⊙ Live</div>
+          <div class="otool">⊿ Analyze</div>
+          <div class="otool">✦ Auto ▾</div>
+          <div class="odiv"></div>
+          <div class="oses">Session ↓</div>
+        </div>
+      </div>
+      <div class="atracks">
+        <div class="trow"><div class="tled"></div><span class="tname">1 — KICK 808</span><div class="tbar"><div class="tfill" style="width:78%"></div></div></div>
+        <div class="trow"><div class="tled" style="opacity:.7"></div><span class="tname">2 — BASS SYNTH</span><div class="tbar"><div class="tfill" style="width:55%"></div></div></div>
+        <div class="trow"><div class="tled" style="opacity:.5"></div><span class="tname">3 — STRINGS</span><div class="tbar"><div class="tfill" style="width:40%"></div></div></div>
+        <div class="trow"><div class="tled" style="opacity:.3"></div><span class="tname">4 — LEAD VOCAL</span><div class="tbar"><div class="tfill" style="width:62%"></div></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S2 API KEYS -->
+<div class="screen" id="s2">
+  <div class="left">
+    <div class="lglow"></div>
+    <div class="eyebrow"><div class="eline"></div>Step 1 of 6<div class="eline"></div></div>
+    <h2>Connect your<br>AI brain</h2>
+    <p class="sub">Your keys stay local in <span class="mono">~/.conductor/config</span><br>Nothing shared or stored by us.</p>
+    <div class="acard" id="ac1">
+      <div class="albl"><div class="kbox">🔑</div>Claude API Key</div>
+      <div class="arow">
+        <input class="ainp" id="inp-claude" type="password" placeholder="sk-ant-api03-…" oninput="checkKey('claude')">
+        <button class="vbtn" onclick="verifyKey('claude')">Verify</button>
+      </div>
+      <div class="ahelp">console.anthropic.com → API Keys</div>
+      <div class="sbadge" id="b-claude"><div class="sdot"></div>Not connected</div>
+    </div>
+    <div class="acard" id="ac2">
+      <div class="albl"><div class="kbox">🔑</div>Google API Key</div>
+      <div class="arow">
+        <input class="ainp" id="inp-google" type="password" placeholder="AIzaSy…" oninput="checkKey('google')">
+        <button class="vbtn" onclick="verifyKey('google')">Verify</button>
+      </div>
+      <div class="ahelp">aistudio.google.com → Get API key</div>
+      <div class="sbadge" id="b-google"><div class="sdot"></div>Not connected</div>
+    </div>
+    <button class="btn btn-d" id="btn2">Verify &amp; Continue <span class="arr">→</span></button>
+    <button class="skip-lnk" onclick="go(3)">Skip for now →</button>
+    <div class="acc-wrap">
+      <button class="acc-btn" onclick="toggleAcc('acc1','ch1')">
+        <span id="ch1" class="acc-ch">▶</span> Why do I need these?
+      </button>
+      <div class="acc-body" id="acc1">
+        Claude is the reasoning engine — reads your Ableton session and gives production advice. Google key connects NotebookLM so Conductor queries your personal knowledge base. Both keys are stored only in <span class="mono">~/.conductor/config</span>.
+      </div>
+    </div>
+  </div>
+  <div class="right">
+    <div class="rgrid"></div><div class="rvig"></div>
+    <div class="rc">
+      <div class="flow">
+        <div class="fnode"><div class="fnlbl">You</div><div class="fnval">👤 Producer</div></div>
+        <div class="fcon"><div class="fline"></div><div class="ftag">Claude API Key</div><div class="fline"></div><div style="font-size:10px;color:rgba(255,255,255,.22)">▼</div></div>
+        <div class="fnode a1"><div class="fnlbl">AI Engine</div><div class="fnval">🧠 Conductor Brain</div></div>
+        <div class="fcon"><div class="fline"></div><div class="ftag">Google API Key</div><div class="fline"></div><div style="font-size:10px;color:rgba(255,255,255,.22)">▼</div></div>
+        <div class="fnode a2"><div class="fnlbl">Your Knowledge</div><div class="fnval">📓 NotebookLM</div></div>
+      </div>
+      <div class="cblock">
+        <div class="chead">
+          <div class="cdot" style="background:#ff5f57"></div>
+          <div class="cdot" style="background:#febc2e"></div>
+          <div class="cdot" style="background:#28c840"></div>
+          <span class="cfn">~/.conductor/config</span>
+        </div>
+        <div class="cbody">
+          <span class="cc"># Keys stored only here</span><br>
+          <span class="ck">CLAUDE_KEY</span>=<span class="cv">sk-ant-…</span><br>
+          <span class="ck">GOOGLE_KEY</span>=<span class="cv">AIzaSy…</span><br>
+          <span class="cc"># Never sent to our servers</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S3 ABLETON -->
+<div class="screen" id="s3">
+  <div class="left">
+    <div class="lglow"></div>
+    <div class="eyebrow"><div class="eline"></div>Step 2 of 6<div class="eline"></div></div>
+    <h2>Connect to<br>Ableton Live</h2>
+    <p class="sub">Conductor watches your session in real time.</p>
+    <div class="scard done" id="sc1">
+      <div class="snum">✓</div>
+      <div><div class="stitle">Ableton Live is running</div><div class="sdesc">Detected on your machine</div></div>
+    </div>
+    <div class="scard" id="sc2">
+      <div class="snum" id="sn2">2</div>
+      <div><div class="stitle">Ableton_Live_MCP is active</div><div class="sdesc">Set as Control Surface 1 in Preferences</div></div>
+    </div>
+    <div class="scard" id="sc3">
+      <div class="snum" id="sn3">3</div>
+      <div><div class="stitle">Bridge connected</div><div class="sdesc">Conductor can read and write your session</div></div>
+    </div>
+    <div class="banner" id="aban"><div class="pdot"></div><span id="abtxt">Waiting for connection…</span></div>
+    <button class="btn btn-d" id="btn3">Continue <span class="arr">→</span></button>
+  </div>
+  <div class="right">
+    <div class="rgrid"></div><div class="rvig"></div>
+    <div class="rc" style="gap:0">
+      <div class="pwin">
+        <div class="ptbar">
+          <div class="ptdot" style="background:#ff5f57"></div>
+          <div class="ptdot" style="background:#febc2e"></div>
+          <div class="ptdot" style="background:#28c840"></div>
+          <div class="pttitle">Ableton Live — Preferences</div>
+        </div>
+        <div class="pbody">
+          <div class="psec">MIDI / Control Surfaces</div>
+          <div class="prow hi"><span class="pkey">Control Surface 1</span><span class="pval">Ableton_Live_MCP</span></div>
+          <div class="prow"><span class="pkey">Control Surface 2</span><span class="pvald">None</span></div>
+          <div class="prow"><span class="pkey">Control Surface 3</span><span class="pvald">None</span></div>
+        </div>
+      </div>
+      <div class="parr">↑ Make sure this matches exactly</div>
+      <div class="lstat" id="lstat">Detecting session…</div>
+    </div>
+  </div>
+</div>
+
+<!-- S4 PERMISSIONS -->
+<div class="screen" id="s4">
+  <div class="left">
+    <div class="lglow"></div>
+    <div class="eyebrow"><div class="eline"></div>Step 3 of 6<div class="eline"></div></div>
+    <h2>Let's get<br>you set up</h2>
+    <p class="sub" style="margin-bottom:18px">Grant Conductor access to work properly.</p>
+    <div class="pcard" id="pc1" onclick="togglePerm(1)">
+      <div class="pewrap">🖥</div>
+      <div style="flex:1"><div class="ptitle">Screen access</div><div class="pdesc">Reads your Ableton layout and UI context.</div></div>
+      <div class="toggle" id="pt1"><div class="tthumb"></div></div>
+    </div>
+    <div class="pcard" id="pc2" onclick="togglePerm(2)">
+      <div class="pewrap">🎙</div>
+      <div style="flex:1"><div class="ptitle">Microphone access</div><div class="pdesc">Optional: voice commands + mix feedback.</div></div>
+      <div class="toggle" id="pt2"><div class="tthumb"></div></div>
+    </div>
+    <div class="pcard" id="pc3" onclick="togglePerm(3)">
+      <div class="pewrap">⌨</div>
+      <div style="flex:1"><div class="ptitle">Global shortcuts</div><div class="pdesc">Open Conductor from anywhere with ⌘⇧M.</div></div>
+      <div class="toggle" id="pt3"><div class="tthumb"></div></div>
+    </div>
+    <button class="btn btn-p" id="pcta" style="margin-top:10px" onclick="handlePerm()">Allow screen access</button>
+  </div>
+  <div class="right">
+    <div class="rgrid"></div><div class="rvig"></div>
+    <div class="rc" style="gap:14px">
+      <div class="mdlg" id="mdlg">
+        <div class="dlgbody">
+          <div class="dlglock">🔒</div>
+          <div class="dlgtitle" id="dlgtitle">"Conductor" would like to record this computer's screen.</div>
+          <div class="dlgsub">Allow access in System Settings.</div>
+        </div>
+        <div class="dlgdiv"></div>
+        <div class="dlgbtns">
+          <button class="dlgbtn">Open System Settings</button>
+          <button class="dlgbtn red">Deny</button>
+        </div>
+      </div>
+      <div class="privnote">System Settings → Privacy &amp; Security<br><span style="color:var(--green)">✓ Conductor</span> — toggle on for each permission</div>
+    </div>
+  </div>
+</div>
+
+<!-- S5 SOUND -->
+<div class="screen" id="s5">
+  <div class="left" style="justify-content:flex-start;padding-top:36px;overflow-y:auto">
+    <div class="lglow"></div>
+    <div class="eyebrow"><div class="eline"></div>Step 4 of 6<div class="eline"></div></div>
+    <h2>What's your<br>sound?</h2>
+    <p class="sub">Conductor uses this for genre-aware advice.</p>
+    <div class="ggrid">
+      <div class="gpill sel" onclick="pickG(this,'cinematic')">Hindi Cinematic</div>
+      <div class="gpill" onclick="pickG(this,'pop')">Bollywood Pop</div>
+      <div class="gpill" onclick="pickG(this,'bhangra')">Punjabi / Bhangra</div>
+      <div class="gpill" onclick="pickG(this,'lofi')">Lo-fi Hip Hop</div>
+      <div class="gpill" onclick="pickG(this,'edm')">Electronic / EDM</div>
+      <div class="gpill" onclick="pickG(this,'rnb')">R&amp;B / Soul</div>
+      <div class="gpill" onclick="pickG(this,'orchestral')">Orchestral</div>
+      <div class="gpill" onclick="pickG(this,'custom')">Custom…</div>
+    </div>
+    <div class="flbl">Artists you reference</div>
+    <input class="tinp" placeholder="e.g. A.R. Rahman, Arijit Singh, Diljit…">
+    <div class="fhelp">Conductor will match their sonic decisions</div>
+    <div class="flbl">Loudness target</div>
+    <div class="lrow">
+      <div class="lpill sel" onclick="pickL(this)">Streaming −14 LUFS</div>
+      <div class="lpill" onclick="pickL(this)">Club −9 LUFS</div>
+      <div class="lpill" onclick="pickL(this)">Custom</div>
+    </div>
+    <button class="btn btn-p" onclick="go(6)">Continue <span class="arr">→</span></button>
+  </div>
+  <div class="right">
+    <div class="rgrid"></div><div class="rvig"></div>
+    <div class="rc">
+      <div class="wwrap">
+        <div class="wheader">
+          <span style="font-size:11px;color:var(--dim)">Waveform Preview</span>
+          <span class="wtag" id="wtag">Hindi Cinematic</span>
+        </div>
+        <canvas id="wc" width="318" height="80"></canvas>
+      </div>
+      <div style="font-size:12px;color:var(--dim);text-align:center;max-width:280px;line-height:1.6">
+        Style adapts per genre selection.<br>Saved to your profile — editable anytime.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S6 KNOWLEDGE -->
+<div class="screen" id="s6">
+  <div class="left">
+    <div class="lglow"></div>
+    <div class="eyebrow"><div class="eline"></div>Step 5 of 6<div class="eline"></div></div>
+    <h2>Your personal<br>knowledge base</h2>
+    <p class="sub">Conductor queries your NotebookLM<br>for production techniques — not generic tips.</p>
+    <div class="nbcard" id="nbc">
+      <div class="nbhdr">
+        <div class="nbibox">📓</div>
+        <div class="nblbl">NotebookLM Notebook ID</div>
+      </div>
+      <div class="arow">
+        <input class="ainp" id="nbinp" placeholder="be8353eb-3d3e-447f-b3ce-4b09f0e1df07">
+        <button class="vbtn" onclick="linkNB()">Link</button>
+      </div>
+      <div class="ahelp">notebooklm.google.com → your notebook URL</div>
+      <div class="sbadge" id="nbbadge"><div class="sdot"></div>Not linked</div>
+    </div>
+    <button class="tier-exp" onclick="toggleTier()">
+      <span class="te-lbl">How Conductor uses knowledge</span>
+      <span class="te-arr" id="tearr">▼</span>
+    </button>
+    <div class="tlist" id="tlist">
+      <div class="titem"><div class="tnum">1</div>🎛 Live Ableton state (always on)</div>
+      <div class="titem"><div class="tnum">2</div>📁 Source-of-truth technique files</div>
+      <div class="titem" style="border:none"><div class="tnum">3</div>📓 Your NotebookLM (deep research)</div>
+    </div>
+    <button class="btn btn-d" id="btn6" style="margin-top:16px">Link &amp; Continue <span class="arr">→</span></button>
+    <div style="text-align:center;margin-top:10px">
+      <button class="skip-lnk" onclick="go(7)" style="width:auto">No notebook yet? Skip for now →</button>
+    </div>
+  </div>
+  <div class="right">
+    <div class="rgrid"></div><div class="rvig"></div>
+    <div class="rc">
+      <div class="kpwrap">
+        <div class="kptier t3"><div class="kpicon">📓</div><div><div class="kpnum">Tier 3 · Deep Research</div><div class="kptitle">NotebookLM</div><div class="kpsub">Your personal production knowledge</div></div></div>
+        <div class="kptier" style="margin:3px 16px"><div class="kpicon">📁</div><div><div class="kpnum">Tier 2 · Reference</div><div class="kptitle">Source Files</div><div class="kpsub">Bundled technique docs</div></div></div>
+        <div class="kptier t1" style="margin:3px 32px 0"><div class="kpicon">🎛</div><div><div class="kpnum">Tier 1 · Always Active</div><div class="kptitle">Live Ableton Session</div><div class="kpsub">Your tracks, tempo, session state</div></div></div>
+      </div>
+      <div style="font-size:11.5px;color:var(--dim);margin-top:12px;text-align:center">Conductor picks the right tier automatically →</div>
+    </div>
+  </div>
+</div>
+
+<!-- S7 DEMO -->
+<div class="screen" id="s7">
+  <div class="left">
+    <div class="lglow"></div>
+    <div class="eyebrow"><div class="eline"></div>Step 6 of 6<div class="eline"></div></div>
+    <h2 style="font-size:34px">Press <span style="color:var(--blue)">⌘⇧M</span><br>to open<br>Conductor</h2>
+    <p class="sub">Reads your Ableton session<br>and responds in context — no prompt needed.</p>
+    <div class="kd">
+      <div class="keycap" id="kc1">⌘<div class="ksub">command</div></div>
+      <span class="plus">+</span>
+      <div class="keycap" id="kc2">⇧<div class="ksub">shift</div></div>
+      <span class="plus">+</span>
+      <div class="keycap" id="kc3">M</div>
+    </div>
+    <button class="btn btn-d" id="btn7">Use the shortcut to continue</button>
+    <p style="font-size:12px;color:var(--dim);margin-top:10px;text-align:center">
+      Press <span style="color:var(--muted)">Space</span> to simulate on non-Mac
+    </p>
+  </div>
+  <div class="right">
+    <div class="rgrid"></div><div class="rvig"></div>
+    <div class="rc">
+      <div class="demo-stage">
+        <div class="abel-bg">
+          <div class="trow"><div class="tled"></div><span class="tname">1 — KICK 808</span><div class="tbar"><div class="tfill" style="width:82%"></div></div></div>
+          <div class="trow"><div class="tled" style="opacity:.7"></div><span class="tname">2 — BASS SYNTH</span><div class="tbar"><div class="tfill" style="width:60%"></div></div></div>
+          <div class="trow"><div class="tled" style="opacity:.5"></div><span class="tname">3 — STRINGS</span><div class="tbar"><div class="tfill" style="width:45%"></div></div></div>
+          <div class="trow"><div class="tled" style="opacity:.4"></div><span class="tname">4 — LEAD VOCAL</span><div class="tbar"><div class="tfill" style="width:70%"></div></div></div>
+          <div class="trow"><div class="tled" style="opacity:.25"></div><span class="tname">5 — REVERB RTN</span><div class="tbar"><div class="tfill" style="width:30%"></div></div></div>
+        </div>
+        <div class="dov" id="dov">
+          <div class="otop"><div class="oicon"><svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="6.5" cy="6.5" r="2.2" fill="rgba(77,142,255,0.95)"/><circle cx="6.5" cy="6.5" r="5" stroke="rgba(77,142,255,0.40)" stroke-width="1"/><circle cx="6.5" cy="2" r=".9" fill="rgba(77,142,255,0.65)"/><circle cx="6.5" cy="11" r=".9" fill="rgba(77,142,255,0.65)"/><circle cx="2" cy="6.5" r=".9" fill="rgba(77,142,255,0.65)"/><circle cx="11" cy="6.5" r=".9" fill="rgba(77,142,255,0.65)"/></svg></div><span class="opholder">Ask anything about your session…</span><div class="osend">↵</div></div>
+          <div class="obot"><div class="otool">⊙ Live</div><div class="otool">⊿ Analyze</div><div class="otool">✦ Auto ▾</div><div class="odiv"></div><div class="oses">Session ↓</div></div>
+        </div>
+      </div>
+      <div style="margin-top:12px;font-size:11.5px;color:var(--dim);display:flex;align-items:center;gap:6px">↑ Appears over Ableton · hides with the same shortcut</div>
+    </div>
+  </div>
+</div>
+
+<!-- S8 SUCCESS -->
+<div class="screen full" id="s8">
+  <div class="slogo">
+    <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+      <circle cx="18" cy="18" r="6" fill="rgba(77,142,255,0.95)"/>
+      <circle cx="18" cy="18" r="14" stroke="rgba(77,142,255,0.45)" stroke-width="1.5"/>
+      <circle cx="18" cy="5" r="2.5" fill="rgba(77,142,255,0.7)"/>
+      <circle cx="18" cy="31" r="2.5" fill="rgba(77,142,255,0.7)"/>
+      <circle cx="5" cy="18" r="2.5" fill="rgba(77,142,255,0.7)"/>
+      <circle cx="31" cy="18" r="2.5" fill="rgba(77,142,255,0.7)"/>
+    </svg>
+  </div>
+  <h1 style="font-size:52px;letter-spacing:-.05em;text-align:center">You're all set.</h1>
+  <p style="font-size:17px;color:var(--muted);margin-top:10px;text-align:center">Conductor is watching your session.</p>
+  <div class="scrow">
+    <div class="scard"><div class="schk">✓</div>Claude connected</div>
+    <div class="scard"><div class="schk">✓</div>Ableton live</div>
+    <div class="scard"><div class="schk">✓</div>Screen access</div>
+    <div class="scard"><div class="schk">✓</div>NotebookLM linked</div>
+  </div>
+  <button class="btn btn-p" style="width:260px" onclick="startProd()">Start producing <span class="arr">→</span></button>
+  <p class="fp" style="margin-top:16px">Press ⌘⇧M anytime to open Conductor.<br>Access settings from the ⚙ icon in the overlay.</p>
+</div>
+
+<!-- Progress dots -->
+<div class="prog" id="prog">
+  <div class="pd active" id="pd1"></div>
+  <div class="pd" id="pd2"></div>
+  <div class="pd" id="pd3"></div>
+  <div class="pd" id="pd4"></div>
+  <div class="pd" id="pd5"></div>
+  <div class="pd" id="pd6"></div>
+  <div class="pd" id="pd7"></div>
+</div>
+</div>
+
+<script>
+var cur = 1;
+
+function go(n) {
+  var old = document.getElementById('s' + cur);
+  old.classList.remove('active');
+  cur = n;
+  var next = document.getElementById('s' + n);
+  next.style.animation = 'none';
+  next.offsetHeight; // reflow
+  next.style.animation = '';
+  next.classList.add('active');
+  updateProg();
+  document.getElementById('prog').style.display = n === 8 ? 'none' : 'flex';
+  if (n === 3) startAbletonSim();
+  if (n === 5) { setTimeout(function(){ drawWave('cinematic'); }, 50); }
+  if (n === 7) armShortcut();
+}
+
+function updateProg() {
+  for (var i = 1; i <= 7; i++) {
+    var d = document.getElementById('pd' + i);
+    if (!d) continue;
+    d.className = 'pd';
+    if (i < cur) d.classList.add('done');
+    else if (i === cur) d.classList.add('active');
+  }
+}
+
+// S2
+var k1 = false, k2 = false;
+function checkKey(w) {
+  var v = document.getElementById('inp-' + w).value;
+  if (v.length > 0) {
+    document.getElementById('inp-' + w).style.borderColor = 'rgba(255,255,255,0.15)';
+  }
+}
+function verifyKey(w) {
+  var v = document.getElementById('inp-' + w).value.trim();
+  if (v.length === 0) {
+    var inp = document.getElementById('inp-' + w);
+    inp.style.borderColor = 'rgba(255,100,100,0.5)';
+    inp.placeholder = 'Please enter a key first';
+    setTimeout(function(){ inp.style.borderColor = ''; inp.placeholder = w === 'claude' ? 'sk-ant-api03-…' : 'AIzaSy…'; }, 2000);
+    return;
+  }
+  var b = document.getElementById('b-' + w);
+  b.innerHTML = '<div class="sdot"></div>Connected';
+  b.classList.add('ok');
+  document.getElementById(w === 'claude' ? 'ac1' : 'ac2').classList.add('ok');
+  if (w === 'claude') k1 = true; else k2 = true;
+  if (k1 && k2) {
+    var btn = document.getElementById('btn2');
+    btn.className = 'btn btn-p';
+    btn.onclick = function(){ go(3); };
+  }
+}
+function toggleAcc(id, chId) {
+  var b = document.getElementById(id);
+  var ch = document.getElementById(chId);
+  b.classList.toggle('open');
+  ch.textContent = b.classList.contains('open') ? '▼' : '▶';
+}
+
+// S3
+function startAbletonSim() {
+  document.getElementById('lstat').textContent = 'Detecting session…';
+  var t = 0;
+  var iv = setInterval(function() {
+    t++;
+    if (t === 2) {
+      document.getElementById('sc2').classList.add('pending');
+      document.getElementById('sn2').textContent = '…';
+    }
+    if (t === 4) {
+      document.getElementById('sc2').classList.remove('pending');
+      document.getElementById('sc2').classList.add('done');
+      document.getElementById('sn2').textContent = '✓';
+      document.getElementById('sc3').classList.add('pending');
+      document.getElementById('sn3').textContent = '…';
+      document.getElementById('lstat').textContent = 'Tracks found: 8 · Tempo: 128 BPM';
+    }
+    if (t === 6) {
+      document.getElementById('sc3').classList.remove('pending');
+      document.getElementById('sc3').classList.add('done');
+      document.getElementById('sn3').textContent = '✓';
+      document.getElementById('lstat').innerHTML = 'Detected: <b>12 tracks</b> · Tempo: <b>128 BPM</b> · Key: <b>C minor</b>';
+      var ban = document.getElementById('aban');
+      ban.classList.add('ok');
+      ban.innerHTML = '<div class="pdot"></div><span>✓ Ableton connected!</span>';
+      var b3 = document.getElementById('btn3');
+      b3.className = 'btn btn-p';
+      b3.onclick = function(){ go(4); };
+      clearInterval(iv);
+    }
+  }, 1300);
+}
+
+// S4
+var ps = [false, false, false];
+var permTitles = ['Allow screen access', 'Allow mic access', 'Allow shortcuts'];
+var dlgTitles = [
+  '"Conductor" would like to record this computer's screen.',
+  '"Conductor" would like to access your microphone.',
+  '"Conductor" would like to control your computer.'
+];
+function togglePerm(n) {
+  ps[n-1] = !ps[n-1];
+  document.getElementById('pt' + n).classList.toggle('on', ps[n-1]);
+  document.getElementById('pc' + n).classList.toggle('on', ps[n-1]);
+  updatePermBtn();
+}
+function updatePermBtn() {
+  var idx = ps.indexOf(false);
+  var btn = document.getElementById('pcta');
+  if (idx === -1) {
+    btn.innerHTML = 'Continue <span class="arr">→</span>';
+    btn.onclick = function(){ go(5); };
+  } else {
+    btn.textContent = permTitles[idx];
+    btn.onclick = handlePerm;
+  }
+}
+function handlePerm() {
+  var idx = ps.indexOf(false);
+  if (idx === -1) { go(5); return; }
+  togglePerm(idx + 1);
+  document.getElementById('dlgtitle').textContent = dlgTitles[idx];
+  var d = document.getElementById('mdlg');
+  d.style.animation = 'none'; d.offsetHeight; d.style.animation = 'popIn 350ms var(--ease) both';
+}
+
+// S5
+var wColors = { cinematic:'#4d8eff', pop:'#ff6eb4', bhangra:'#ff8c3a', lofi:'#8a9fff', edm:'#1fcc6e', rnb:'#b47dff', orchestral:'#ffd97d', custom:'#aaaaaa' };
+var wLabels = { cinematic:'Hindi Cinematic', pop:'Bollywood Pop', bhangra:'Punjabi / Bhangra', lofi:'Lo-fi Hip Hop', edm:'Electronic / EDM', rnb:'R&B / Soul', orchestral:'Orchestral', custom:'Custom' };
+function pickG(el, genre) {
+  document.querySelectorAll('.gpill').forEach(function(p){ p.classList.remove('sel'); });
+  el.classList.add('sel');
+  var tag = document.getElementById('wtag');
+  if (tag) tag.textContent = wLabels[genre] || 'Custom';
+  drawWave(genre);
+}
+function pickL(el) {
+  document.querySelectorAll('.lpill').forEach(function(p){ p.classList.remove('sel'); });
+  el.classList.add('sel');
+}
+function drawWave(genre) {
+  var cv = document.getElementById('wc');
+  if (!cv) return;
+  var ctx = cv.getContext('2d');
+  var W = 318, H = 80, mid = H / 2;
+  ctx.clearRect(0, 0, W, H);
+  var col = wColors[genre] || '#4d8eff';
+  var grad = ctx.createLinearGradient(0, 0, W, 0);
+  grad.addColorStop(0, 'transparent');
+  grad.addColorStop(0.08, col);
+  grad.addColorStop(0.92, col);
+  grad.addColorStop(1, 'transparent');
+  ctx.strokeStyle = grad;
+  ctx.lineWidth = 1.8;
+  ctx.beginPath();
+  for (var x = 0; x < W; x++) {
+    var p = x / W;
+    var y = mid;
+    if (genre === 'edm') y = mid + Math.sin(p*Math.PI*20)*24*Math.sin(p*Math.PI);
+    else if (genre === 'bhangra') y = mid + Math.sin(p*Math.PI*14)*18*Math.sin(p*Math.PI) + Math.sin(p*Math.PI*40)*3;
+    else if (genre === 'lofi') y = mid + Math.sin(p*Math.PI*6)*12*Math.sin(p*Math.PI);
+    else if (genre === 'pop') y = mid + Math.sin(p*Math.PI*10)*18*Math.sin(p*Math.PI);
+    else if (genre === 'rnb') y = mid + Math.sin(p*Math.PI*8)*16*Math.sin(p*Math.PI) + Math.sin(p*Math.PI*22)*4;
+    else if (genre === 'orchestral') y = mid + Math.sin(p*Math.PI*5)*20*Math.sin(p*Math.PI) + Math.sin(p*Math.PI*14)*5;
+    else y = mid + Math.sin(p*Math.PI*7)*16*Math.sin(p*Math.PI) + Math.sin(p*Math.PI*20)*5;
+    if (x === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+  }
+  ctx.stroke();
+}
+
+// S6
+function linkNB() {
+  var v = document.getElementById('nbinp').value.trim();
+  if (v.length > 4) {
+    var b = document.getElementById('nbbadge');
+    b.innerHTML = '<div class="sdot"></div>Linked — 257 sources found';
+    b.classList.add('ok');
+    document.getElementById('nbc').classList.add('ok');
+    var b6 = document.getElementById('btn6');
+    b6.className = 'btn btn-p';
+    b6.onclick = function(){ go(7); };
+  }
+}
+function toggleTier() {
+  document.getElementById('tlist').classList.toggle('open');
+  document.getElementById('tearr').classList.toggle('open');
+}
+
+// S7
+function armShortcut() {
+  function onKey(e) {
+    var hit = (e.metaKey || e.ctrlKey) && e.shiftKey && (e.key === 'm' || e.key === 'M');
+    var sim = e.code === 'Space' && document.getElementById('s7').classList.contains('active');
+    if (hit || sim) {
+      e.preventDefault();
+      ['kc1','kc2','kc3'].forEach(function(id, i){
+        setTimeout(function(){
+          var k = document.getElementById(id);
+          k.classList.add('pressed');
+          setTimeout(function(){ k.classList.remove('pressed'); }, 220);
+        }, i * 70);
+      });
+      document.getElementById('dov').classList.add('shown');
+      var b7 = document.getElementById('btn7');
+      b7.className = 'btn btn-p';
+      b7.innerHTML = 'Continue <span class="arr">→</span>';
+      b7.onclick = function(){ go(8); };
+      document.removeEventListener('keydown', onKey);
+    }
+  }
+  document.addEventListener('keydown', onKey);
+}
+
+// S8
+function startProd() {
+  var sh = document.getElementById('shell');
+  sh.style.transition = 'opacity 600ms ease, transform 600ms cubic-bezier(0.16,1,0.3,1)';
+  sh.style.opacity = '0';
+  sh.style.transform = 'scale(0.96)';
+}
+
+window.addEventListener('load', function(){ drawWave('cinematic'); });
+</script>
+</body>
+</html>

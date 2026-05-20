@@ -106,7 +106,7 @@ Ableton Live 12.4 → TCP 16619 → Ableton_Live_MCP (bschoepke, patched)
 | `search_param(track, plugin, keyword)` | Find plugin params by name → returns IDs + values |
 | `get_params(track, plugin, [ids])` | Get current values for specific param IDs |
 | `set_params(track, plugin, {id: val})` | Set params by ID — batch, normalized 0.0–1.0 |
-| `get_analysis(track)` | Real-time per-track: LUFS, true peak, 7-band EQ, stereo width, brightness |
+| `get_analysis(track)` | Real-time per-track: dBRMS loudness, sample peak, 7-band EQ, stereo width, brightness |
 
 **When to use PluginBridge vs audio-analyzer:**
 - `audio_analyzer` MCP → file-based, full song analysis, key/BPM detection
@@ -225,10 +225,10 @@ Third-party plugin parameter control + real-time per-track audio analysis. Built
 **Mixing workflow:**
 ```
 list_instances()                          → ["Vocal Bus", "Drum Bus"]
-get_analysis("Vocal Bus")                 → "[Vocal Bus] -16.2 LUFS | TP:-1.1 | low:+7 | bright"
+get_analysis("Vocal Bus")                 → "[Vocal Bus] -16.2 dBRMS | Peak:-1.1 | low:+7 | bright"
 search_param("Vocal Bus","Pro-Q 4","band 1 freq")  → [{id:12, name:"Band 1 Freq", value:0.5}]
 set_params("Vocal Bus","Pro-Q 4",{12: 0.3})        → "ok"
-get_analysis("Vocal Bus")                 → "[Vocal Bus] -16.2 LUFS | balanced"
+get_analysis("Vocal Bus")                 → "[Vocal Bus] -16.2 dBRMS | balanced"
 ```
 
 **What it unlocks (impossible any other way):**

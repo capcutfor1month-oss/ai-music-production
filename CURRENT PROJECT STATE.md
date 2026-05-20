@@ -17,15 +17,15 @@
 
 ## Project Identity
 
-Project Name:
-Date Saved:
-Saved By:
+Project Name: demo
+Date Saved: 2026-05-17
+Saved By: Gemini CLI
 
 ---
 
 ## Stage
 
-Current Stage:
+Current Stage: Stage 0 - Vision / References / Intent
 
 Stage Options:
 - Stage 0 - Vision / References / Intent
@@ -37,13 +37,13 @@ Stage Options:
 
 ## Core Context
 
-Genre:
-Sub-Genre / Hybrid:
-BPM:
-Key / Scale:
-Time Signature:
-Primary References:
-Emotional Intention:
+Genre: 
+Sub-Genre / Hybrid: 
+BPM: 120 (Default)
+Key / Scale: 
+Time Signature: 4/4
+Primary References: 
+Emotional Intention: demo
 
 ---
 
@@ -67,11 +67,11 @@ Locked Sounds / Libraries / Plugins:
 
 Still Open:
 
-- 
+- Everything (New Project)
 
 Needs Adi Decision:
 
-- 
+- Specific genre and stylistic direction
 
 ---
 
@@ -79,29 +79,29 @@ Needs Adi Decision:
 
 ### Stage 0 - Vision / References / Intent
 
-Status:
-Notes:
+Status: Active
+Notes: Starting a new "demo" project.
 
 ### Stage 1 - Production / Composition
 
-Status:
-Notes / Voicing / Arrangement:
-MIDI Humanization Notes:
-Production-First Issues:
+Status: Pending
+Notes / Voicing / Arrangement: 
+MIDI Humanization Notes: 
+Production-First Issues: 
 
 ### Stage 2 - Mixing
 
-Status:
-Routing / Bus State:
-Mix Problems:
-Approved Mix Moves:
+Status: Pending
+Routing / Bus State: 
+Mix Problems: 
+Approved Mix Moves: 
 
 ### Stage 3 - Master / Release
 
-Status:
-Target LUFS:
-True Peak:
-Export Notes:
+Status: Pending
+Target LUFS: 
+True Peak: 
+Export Notes: 
 
 ---
 
@@ -117,7 +117,7 @@ Earlier-stage issues discovered later:
 
 What Adi is currently trying to solve:
 
--
+- Initializing the session and defining the project vision.
 
 ---
 
@@ -125,10 +125,10 @@ What Adi is currently trying to solve:
 
 The next single useful action:
 
--
+- Define the stylistic direction or start exploring sounds for the "demo" mood.
 
 ---
 
 ## Session Notes
 
--
+- Project started as "demo" on 2026-05-17.

@@ -1,0 +1,42 @@
+<script>
+window.CONDUCTOR_CONFIG = (function(){
+  var base={claudeKey:'',googleKey:'',notebookId:'',genre:'cinematic',artists:'',lufsTarget:'-14',shortcutConfirmed:false,setupComplete:false,sessions:[],activeMode:'Auto'};
+  try{var raw=localStorage.getItem('conductor_config');if(raw) base=Object.assign(base,JSON.parse(raw)||{});}catch(e){}
+  return base;
+})();
+function saveConductorSetupConfig(partial){
+  window.CONDUCTOR_CONFIG=Object.assign(window.CONDUCTOR_CONFIG||{},partial||{});
+  localStorage.setItem('conductor_config',JSON.stringify(window.CONDUCTOR_CONFIG));
+  console.log('Config saved: '+JSON.stringify(window.CONDUCTOR_CONFIG));
+}
+function collectSetupValues(){
+  var claude=(document.querySelector('input[type="password"], input[data-config="claude"], #claudeKey, #apiKey, #claude-key')||{}).value||window.CLAUDE_KEY||'';
+  var google=(document.querySelector('input[data-config="google"], #googleKey, #google-key')||{}).value||window.GOOGLE_KEY||'';
+  var notebook=(document.querySelector('input[data-config="notebook"], #notebookId, #notebook-id')||{}).value||window.NOTEBOOK_ID||'';
+  var genre=(document.querySelector('input[data-config="genre"], #genre')||{}).value||window.GENRE||'cinematic';
+  var artists=(document.querySelector('input[data-config="artists"], #artists')||{}).value||window.ARTISTS||'';
+  var lufs=(document.querySelector('input[data-config="lufs"], #lufsTarget, #lufs')||{}).value||window.LUFS_TARGET||'-14';
+  var shortcut=!!(window.SHORTCUT_CONFIRMED||window.shortcutConfirmed||true);
+  return {claudeKey:claude,googleKey:google,notebookId:notebook,genre:genre,artists:artists,lufsTarget:String(lufs).replace(/[^\-\d.]/g,'')||'-14',shortcutConfirmed:shortcut,setupComplete:true,sessions:(window.CONDUCTOR_CONFIG&&window.CONDUCTOR_CONFIG.sessions)||[],activeMode:'Auto'};
+}
+function finishSetupAndShowOverlay(){
+  var cfg=collectSetupValues();
+  saveConductorSetupConfig(cfg);
+  var setupShell=document.querySelector('.setup-shell, #setup-shell, .wizard, body > .container')||document.body.firstElementChild;
+  var overlayShell=document.querySelector('#overlay-shell');
+  if(!overlayShell){
+    overlayShell=document.createElement('div');
+    overlayShell.id='overlay-shell';
+    overlayShell.style.cssText='position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(5,5,7,0.96);opacity:0;transition:opacity 300ms ease;z-index:9999;color:#f5f5f7;font-family:Inter,sans-serif;';
+    overlayShell.innerHTML='<div style="width:420px;background:rgba(10,10,13,0.92);backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,0.10);border-radius:18px;box-shadow:0 24px 72px rgba(0,0,0,0.65), inset 0 1px 0 rgba(255,255,255,0.08);overflow:hidden"><div style="height:48px;display:flex;align-items:center;padding:0 16px;font-size:13px;color:rgba(255,255,255,0.8)">Conductor overlay ready</div><div style="height:40px;border-top:1px solid rgba(255,255,255,0.07);display:flex;align-items:center;padding:0 12px;font-size:11.5px;color:rgba(255,255,255,0.4)">⚡ '+(cfg.genre?cfg.genre:'Auto')+' ▾<div style="margin-left:auto">Session ↓</div></div></div>';
+    document.body.appendChild(overlayShell);
+  }
+  if(setupShell){setupShell.style.transition='opacity 260ms ease';setupShell.style.opacity='0';}
+  setTimeout(function(){ if(setupShell) setupShell.style.display='none'; overlayShell.style.opacity='1'; },280);
+}
+(function bindStartProducing(){
+  var btns=[].slice.call(document.querySelectorAll('button, .btn, [role="button"]'));
+  var target=btns.find(function(b){ return /start producing/i.test((b.textContent||'').trim()); });
+  if(target){ target.addEventListener('click', function(){ setTimeout(finishSetupAndShowOverlay, 10); }); }
+})();
+</script>

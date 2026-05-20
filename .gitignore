@@ -25,6 +25,11 @@ audio-analyzer-rs/mcp-server
 *.ogg
 media/reference-audio/
 
+# Video/screen recordings (too large for git)
+*.mp4
+*.mov
+*.m4v
+
 # Node
 node_modules/
 package-lock.json
@@ -61,3 +66,10 @@ dist/
 
 # Large binary assets
 machine-assets/
+
+# Ableton project binaries
+*.als
+*.alp
+
+# Claude local machine settings (permissions list, machine-specific)
+.claude/settings.local.json
