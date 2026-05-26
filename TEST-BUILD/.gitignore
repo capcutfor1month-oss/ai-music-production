@@ -1,0 +1,5 @@
+.env
+__pycache__/
+*.pyc
+tmp/harness_sessions/
+logs/harness_sandbox/
